@@ -24,6 +24,17 @@ Patch5:     wl-kmod-006_kernel_3.16.patch
 Patch6:     wl-kmod-007_kernel_3.17.patch
 Patch7:     wl-kmod-008_kernel_3.18.patch
 
+# fixes 
+#~/BUILD/wl-kmod-6.30.223.248/_kmod_build_3.10.0-229.el7.x86_64/src/wl/sys/wl_cfg80211_hybrid.c:1888:22:
+# error: incompatible types when assigning to type 'const struct wiphy_wowlan_support *' from type 'struct wiphy_wowlan_support'
+#  wdev->wiphy->wowlan = wl_wowlan_support;
+#                        ^
+#~/BUILD/wl-kmod-6.30.223.248/_kmod_build_3.10.0-229.el7.x86_64/src/wl/sys/wl_cfg80211_hybrid.c:2114:4:
+# error: too few arguments to function 'cfg80211_ibss_joined'
+#    cfg80211_ibss_joined(ndev, (u8 *)&wl->bssid, GFP_KERNEL);
+#        ^
+Patch100:   wl-kmod-100_redhat.patch
+
 BuildRequires:  %{_bindir}/kmodtool
 
 # needed for plague to make sure it builds for i586 and i686
@@ -69,6 +80,8 @@ pushd %{name}-%{version}-src
 %patch5  -p1 -b .kernel-3.16
 %patch6  -p1 -b .kernel-3.17
 %patch7  -p1 -b .kernel-3.18
+
+%patch100  -p1 -b .redhat
 popd
 
 for kernel_version in %{?kernel_versions} ; do
