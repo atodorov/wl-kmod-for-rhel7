@@ -1,0 +1,29 @@
+--- hybrid-v35_64-nodebug-pcoem-6_30_223_248.orig/src/wl/sys/wl_cfg80211_hybrid.c	2015-11-21 10:28:08.388882146 +0200
++++ hybrid-v35_64-nodebug-pcoem-6_30_223_248/src/wl/sys/wl_cfg80211_hybrid.c	2015-11-21 10:39:54.455368556 +0200
+@@ -1456,7 +1456,7 @@
+ 		WL_DBG(("Could not get rate (%d)\n", err));
+ 	} else {
+ 		rate = dtoh32(rate);
+-		sinfo->filled |= STATION_INFO_TX_BITRATE;
++		sinfo->filled |= NL80211_STA_INFO_TX_BITRATE;
+ 		sinfo->txrate.legacy = rate * 5;
+ 		WL_DBG(("Rate %d Mbps\n", (rate / 2)));
+ 	}
+@@ -1469,7 +1469,7 @@
+ 			return err;
+ 		}
+ 		rssi = dtoh32(scb_val.val);
+-		sinfo->filled |= STATION_INFO_SIGNAL;
++		sinfo->filled |= NL80211_STA_INFO_SIGNAL;
+ 		sinfo->signal = rssi;
+ 		WL_DBG(("RSSI %d dBm\n", rssi));
+ 	}
+@@ -2025,7 +2025,7 @@
+ 
+ 	notify_ie = (u8 *)bi + le16_to_cpu(bi->ie_offset);
+ 	notify_ielen = le32_to_cpu(bi->ie_length);
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0)
+ 	cbss = cfg80211_inform_bss(wiphy, channel, 
+ 		(mgmt_type == IEEE80211_STYPE_PROBE_RESP) ? CFG80211_BSS_FTYPE_PRESP : CFG80211_BSS_FTYPE_BEACON,
+ 		(const u8 *)(bi->BSSID.octet),

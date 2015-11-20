@@ -7,7 +7,7 @@
 
 Name:       wl-kmod
 Version:    6.30.223.248
-Release:    6%{?dist}
+Release:    7%{?dist}
 Summary:    Kernel module for Broadcom wireless devices
 Group:      System Environment/Kernel
 License:    Redistributable, no modification permitted
@@ -34,6 +34,26 @@ Patch7:     wl-kmod-008_kernel_3.18.patch
 #    cfg80211_ibss_joined(ndev, (u8 *)&wl->bssid, GFP_KERNEL);
 #        ^
 Patch100:   wl-kmod-100_redhat.patch
+
+# fixes for kernel-3.10.0-327.el7.x86_64 introduced in RHEL 7.2:
+#
+#~/BUILD/wl-kmod-6.30.223.248/_kmod_build_3.10.0-327.el7.x86_64/src/wl/sys/wl_cfg80211_hybrid.c:1459:20: error: ‘STATION_INFO_TX_BITRATE’ undeclared (first use in this function)
+#   sinfo->filled |= STATION_INFO_TX_BITRATE;
+#                    ^
+#~/BUILD/wl-kmod-6.30.223.248/_kmod_build_3.10.0-327.el7.x86_64/src/wl/sys/wl_cfg80211_hybrid.c:1472:20: error: ‘STATION_INFO_SIGNAL’ undeclared (first use in this function)
+#   sinfo->filled |= STATION_INFO_SIGNAL;
+#                ^
+#~/BUILD/wl-kmod-6.30.223.248/_kmod_build_3.10.0-327.el7.x86_64/src/wl/sys/wl_cfg80211_hybrid.c:2037:3: error: incompatible type for argument 3 of ‘cfg80211_inform_bss’
+#   (const u8 *)notify_ie, notify_ielen, signal, GFP_KERNEL);
+#   ^
+#include/net/cfg80211.h:4029:1: note: expected ‘enum cfg80211_bss_frame_type’ but argument is of type ‘const u8 *’
+# cfg80211_inform_bss(struct wiphy *wiphy,
+# ^
+#
+#~/BUILD/wl-kmod-6.30.223.248/_kmod_build_3.10.0-327.el7.x86_64/src/wl/sys/wl_cfg80211_hybrid.c:2037:3: error: too few arguments to function ‘cfg80211_inform_bss’
+#   (const u8 *)notify_ie, notify_ielen, signal, GFP_KERNEL);
+#   ^
+Patch101:   wl-kmod-101_redhat_7.2.patch
 
 BuildRequires:  %{_bindir}/kmodtool
 
@@ -82,6 +102,7 @@ pushd %{name}-%{version}-src
 %patch7  -p1 -b .kernel-3.18
 
 %patch100  -p1 -b .redhat
+%patch101  -p1 -b .redhat_7.2
 popd
 
 for kernel_version in %{?kernel_versions} ; do
@@ -111,6 +132,10 @@ chmod 0755 $RPM_BUILD_ROOT%{kmodinstdir_prefix}*%{kmodinstdir_postfix}/* || :
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+
+* Sat Nov 21 2015 Alexander Todorov <atodorov@redhat.com> - 6.30.223.248-7
+- Rebuilt for RHEL 7.2 kernel-3.10.0-327.el7.x86_64 with patches
+
 * Fri Jun 26 2015 Alexander Todorov <atodorov@redhat.com> - 6.30.223.248-6
 - Rebuilt for RHEL7 kernel-3.10.0-229.7.2.el7.x86_64
 
