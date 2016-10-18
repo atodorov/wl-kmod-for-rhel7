@@ -1,0 +1,109 @@
+--- hybrid-v35_64-nodebug-pcoem-6_30_223_248.orig/src/wl/sys/wl_cfg80211_hybrid.c	2016-10-18 11:28:07.741052595 +0300
++++ hybrid-v35_64-nodebug-pcoem-6_30_223_248/src/wl/sys/wl_cfg80211_hybrid.c	2016-10-18 11:35:25.177211654 +0300
+--- wl_cfg80211_hybrid.c.redhat_7.3	2016-10-18 11:48:47.926360149 +0300
++++ wl_cfg80211_hybrid.c	2016-10-18 11:52:45.576509198 +0300
+@@ -234,7 +234,7 @@
+ #endif				
+ 
+ #define CHAN2G(_channel, _freq, _flags) {			\
+-	.band			= IEEE80211_BAND_2GHZ,		\
++	.band			= NL80211_BAND_2GHZ,		\
+ 	.center_freq		= (_freq),			\
+ 	.hw_value		= (_channel),			\
+ 	.flags			= (_flags),			\
+@@ -243,7 +243,7 @@
+ }
+ 
+ #define CHAN5G(_channel, _flags) {				\
+-	.band			= IEEE80211_BAND_5GHZ,		\
++	.band			= NL80211_BAND_5GHZ,		\
+ 	.center_freq		= 5000 + (5 * (_channel)),	\
+ 	.hw_value		= (_channel),			\
+ 	.flags			= (_flags),			\
+@@ -377,7 +377,7 @@
+ };
+ 
+ static struct ieee80211_supported_band __wl_band_2ghz = {
+-	.band = IEEE80211_BAND_2GHZ,
++	.band = NL80211_BAND_2GHZ,
+ 	.channels = __wl_2ghz_channels,
+ 	.n_channels = ARRAY_SIZE(__wl_2ghz_channels),
+ 	.bitrates = wl_g_rates,
+@@ -385,7 +385,7 @@
+ };
+ 
+ static struct ieee80211_supported_band __wl_band_5ghz_a = {
+-	.band = IEEE80211_BAND_5GHZ,
++	.band = NL80211_BAND_5GHZ,
+ 	.channels = __wl_5ghz_a_channels,
+ 	.n_channels = ARRAY_SIZE(__wl_5ghz_a_channels),
+ 	.bitrates = wl_a_rates,
+@@ -393,7 +393,7 @@
+ };
+ 
+ static struct ieee80211_supported_band __wl_band_5ghz_n = {
+-	.band = IEEE80211_BAND_5GHZ,
++	.band = NL80211_BAND_5GHZ,
+ 	.channels = __wl_5ghz_n_channels,
+ 	.n_channels = ARRAY_SIZE(__wl_5ghz_n_channels),
+ 	.bitrates = wl_a_rates,
+@@ -1870,8 +1870,8 @@
+ 	wdev->wiphy->max_num_pmkids = WL_NUM_PMKIDS_MAX;
+ #endif
+ 	wdev->wiphy->interface_modes = BIT(NL80211_IFTYPE_STATION) | BIT(NL80211_IFTYPE_ADHOC);
+-	wdev->wiphy->bands[IEEE80211_BAND_2GHZ] = &__wl_band_2ghz;
+-	wdev->wiphy->bands[IEEE80211_BAND_5GHZ] = &__wl_band_5ghz_a; 
++	wdev->wiphy->bands[NL80211_BAND_2GHZ] = &__wl_band_2ghz;
++	wdev->wiphy->bands[NL80211_BAND_5GHZ] = &__wl_band_5ghz_a; 
+ 	wdev->wiphy->signal_type = CFG80211_SIGNAL_TYPE_MBM;
+ 	wdev->wiphy->cipher_suites = __wl_cipher_suites;
+ 	wdev->wiphy->n_cipher_suites = ARRAY_SIZE(__wl_cipher_suites);
+@@ -1994,7 +1994,7 @@
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 39)
+ 	freq = ieee80211_channel_to_frequency(notif_bss_info->channel,
+ 		(notif_bss_info->channel <= CH_MAX_2G_CHANNEL) ?
+-		IEEE80211_BAND_2GHZ : IEEE80211_BAND_5GHZ);
++		NL80211_BAND_2GHZ : NL80211_BAND_5GHZ);
+ #else
+ 	freq = ieee80211_channel_to_frequency(notif_bss_info->channel);
+ #endif
+@@ -2076,7 +2076,7 @@
+ 		}
+ 		else if ((event == WLC_E_LINK && ~(flags & WLC_EVENT_MSG_LINK)) ||
+ 			event == WLC_E_DEAUTH_IND || event == WLC_E_DISASSOC_IND) {
+-			cfg80211_disconnected(ndev, 0, NULL, 0, GFP_KERNEL);
++			cfg80211_disconnected(ndev, 0, NULL, 0, 0, GFP_KERNEL);
+ 			clear_bit(WL_STATUS_CONNECTED, &wl->status);
+ 			wl_link_down(wl);
+ 			wl_init_prof(wl->profile);
+@@ -2106,7 +2106,7 @@
+ 
+ 			freq = ieee80211_channel_to_frequency(bss_info_channel,
+ 				(bss_info_channel <= CH_MAX_2G_CHANNEL) ?
+-				IEEE80211_BAND_2GHZ : IEEE80211_BAND_5GHZ);
++				NL80211_BAND_2GHZ : NL80211_BAND_5GHZ);
+ 
+ 			channel = ieee80211_get_channel(wl_to_wiphy(wl), freq);
+ 			cfg80211_ibss_joined(ndev, (u8 *)&wl->bssid, channel, GFP_KERNEL);
+@@ -2240,10 +2240,10 @@
+ 		join_params->params.chanspec_list[0] =
+ 		    ieee80211_frequency_to_channel(chan->center_freq);
+ 
+-		if (chan->band == IEEE80211_BAND_2GHZ) {
++		if (chan->band == NL80211_BAND_2GHZ) {
+ 			chanspec |= WL_CHANSPEC_BAND_2G;
+ 		}
+-		else if (chan->band == IEEE80211_BAND_5GHZ) {
++		else if (chan->band == NL80211_BAND_5GHZ) {
+ 			chanspec |= WL_CHANSPEC_BAND_5G;
+ 		}
+ 		else {
+@@ -2869,7 +2869,7 @@
+ 
+ 	if (phy == 'n' || phy == 'a' || phy == 'v') {
+ 		wiphy = wl_to_wiphy(wl);
+-		wiphy->bands[IEEE80211_BAND_5GHZ] = &__wl_band_5ghz_n;
++		wiphy->bands[NL80211_BAND_5GHZ] = &__wl_band_5ghz_n;
+ 	}
+ 
+ 	return err;

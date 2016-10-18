@@ -7,7 +7,7 @@
 
 Name:       wl-kmod
 Version:    6.30.223.248
-Release:    8%{?dist}
+Release:    9%{?dist}
 Summary:    Kernel module for Broadcom wireless devices
 Group:      System Environment/Kernel
 License:    Redistributable, no modification permitted
@@ -54,6 +54,13 @@ Patch100:   wl-kmod-100_redhat.patch
 #   (const u8 *)notify_ie, notify_ielen, signal, GFP_KERNEL);
 #   ^
 Patch101:   wl-kmod-101_redhat_7.2.patch
+
+# Fixes for kernel-3.10.0-513.el7.x86_64 introduced in RHEL 7.3
+#
+# ./_kmod_build_3.10.0-513.el7.x86_64/src/wl/sys/wl_cfg80211_hybrid.c:237:12: error: 'IEEE80211_BAND_2GHZ' undeclared here (not in a function)
+#  .band   = IEEE80211_BAND_2GHZ,  \
+
+Patch102:   wl-kmod-102_redhat_7.3.patch
 
 BuildRequires:  %{_bindir}/kmodtool
 
@@ -103,6 +110,7 @@ pushd %{name}-%{version}-src
 
 %patch100  -p1 -b .redhat
 %patch101  -p1 -b .redhat_7.2
+%patch102  -p1 -b .redhat_7.3
 popd
 
 for kernel_version in %{?kernel_versions} ; do
@@ -132,6 +140,9 @@ chmod 0755 $RPM_BUILD_ROOT%{kmodinstdir_prefix}*%{kmodinstdir_postfix}/* || :
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+
+* Tue Oct 18 2016 Alexander Todorov <atodorov@redhat.com> - 6.30.223.248-9
+- Rebuilt for RHEL 7.2 kernel-3.10.0-513.el7.x86_64
 
 * Wed Jan 27 2016 Alexander Todorov <atodorov@redhat.com> - 6.30.223.248-8
 - Rebuilt for RHEL 7.2 kernel-3.10.0-327.4.5.el7.x86_64
