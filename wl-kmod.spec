@@ -7,7 +7,7 @@
 
 Name:       wl-kmod
 Version:    6.30.223.248
-Release:    12%{?dist}
+Release:    13%{?dist}
 Summary:    Kernel module for Broadcom wireless devices
 Group:      System Environment/Kernel
 License:    Redistributable, no modification permitted
@@ -145,6 +145,10 @@ chmod 0755 $RPM_BUILD_ROOT%{kmodinstdir_prefix}*%{kmodinstdir_postfix}/* || :
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+
+* Tue Jul 18 2017 Alexander Todorov <atodorov@redhat.com> - 6.30.223.248-13
+- Properly rebuilt with patches for kernel-4.10.0-11.el7.x86_64
+- kernel is custom built for RHEL 7
 
 * Mon Jul 17 2017 Alexander Todorov <atodorov@redhat.com> - 6.30.223.248-12
 - Properly rebuilt with patches for RHEL 7.4 kernel-3.10.0-693.el7.x86_64
