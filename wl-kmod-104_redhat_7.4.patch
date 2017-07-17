@@ -1,0 +1,38 @@
+--- hybrid-v35_64-nodebug-pcoem-6_30_223_248.orig/src/wl/sys/wl_cfg80211_hybrid.c	2017-07-17 22:45:13.071065659 +0300
++++ hybrid-v35_64-nodebug-pcoem-6_30_223_248/src/wl/sys/wl_cfg80211_hybrid.c		2017-07-17 23:15:25.396618677 +0300
+@@ -2377,7 +2377,10 @@
+ 
+ 	if (wl->scan_request) {
+ 		WL_DBG(("%s: Aborting scan\n", __FUNCTION__));
+-		cfg80211_scan_done(wl->scan_request, true);     
++		struct cfg80211_scan_info info = {
++			.aborted = true,
++		};
++		cfg80211_scan_done(wl->scan_request, &info);
+ 		wl->scan_request = NULL;
+ 	}
+ 
+@@ -2478,7 +2481,10 @@
+ 
+ scan_done_out:
+ 	if (wl->scan_request) {
+-		cfg80211_scan_done(wl->scan_request, false);
++		struct cfg80211_scan_info info = {
++			.aborted = false,
++		};
++		cfg80211_scan_done(wl->scan_request, &info);
+ 		wl->scan_request = NULL;
+ 	}
+ 	rtnl_unlock();
+@@ -2897,7 +2903,10 @@
+ 	s32 err = 0;
+ 
+ 	if (wl->scan_request) {
+-		cfg80211_scan_done(wl->scan_request, true);	
++		struct cfg80211_scan_info info = {
++			.aborted = true,
++		};
++		cfg80211_scan_done(wl->scan_request, &info);
+ 		wl->scan_request = NULL;
+ 	}
+ 

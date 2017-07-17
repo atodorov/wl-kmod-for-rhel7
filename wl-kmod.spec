@@ -7,7 +7,7 @@
 
 Name:       wl-kmod
 Version:    6.30.223.248
-Release:    11%{?dist}
+Release:    12%{?dist}
 Summary:    Kernel module for Broadcom wireless devices
 Group:      System Environment/Kernel
 License:    Redistributable, no modification permitted
@@ -62,6 +62,10 @@ Patch101:   wl-kmod-101_redhat_7.2.patch
 
 Patch102:   wl-kmod-102_redhat_7.3.patch
 
+# Updates second parameter of cfg80211_scan_done from bool to struct
+Patch104:   wl-kmod-104_redhat_7.4.patch
+
+
 BuildRequires:  %{_bindir}/kmodtool
 
 # needed for plague to make sure it builds for i586 and i686
@@ -111,6 +115,7 @@ pushd %{name}-%{version}-src
 %patch100  -p1 -b .redhat
 %patch101  -p1 -b .redhat_7.2
 %patch102  -p1 -b .redhat_7.3
+%patch104  -p1 -b .redhat_7.4
 popd
 
 for kernel_version in %{?kernel_versions} ; do
@@ -141,8 +146,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 
+* Mon Jul 17 2017 Alexander Todorov <atodorov@redhat.com> - 6.30.223.248-12
+- Properly rebuilt with patches for RHEL 7.4 kernel-3.10.0-693.el7.x86_64
+
 * Mon Jul 17 2017 Alexander Todorov <atodorov@redhat.com> - 6.30.223.248-11
-- Rebuilt for RHEL 7.4 kernel-3.10.0-693.el7.x86_64
+- this is a broken release
 
 * Thu Dec 01 2016 Alexander Todorov <atodorov@redhat.com> - 6.30.223.248-10
 - Rebuilt for RHEL 7.3 kernel-3.10.0-514.el7.x86_64
